@@ -1,0 +1,145 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="HIS.SiteMaster" %>
+
+<!DOCTYPE html>
+<html lang="vi">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> - Hệ Thống Quản Lý Phòng Khám HIS</title>
+
+    <asp:PlaceHolder runat="server">
+        <%: Scripts.Render("~/bundles/modernizr") %>
+    </asp:PlaceHolder>
+
+    <webopt:bundlereference runat="server" path="~/Content/css" />
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    
+    <!-- Link FontAwesome CDN for modern vector icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+    <form runat="server">
+        <asp:ScriptManager runat="server">
+            <Scripts>
+                <asp:ScriptReference Name="MsAjaxBundle" />
+                <asp:ScriptReference Name="jquery" />
+                <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
+                <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
+                <asp:ScriptReference Name="MenuStandards.js" Assembly="System.Web" Path="~/Scripts/WebForms/MenuStandards.js" />
+                <asp:ScriptReference Name="GridView.js" Assembly="System.Web" Path="~/Scripts/WebForms/GridView.js" />
+                <asp:ScriptReference Name="DetailsView.js" Assembly="System.Web" Path="~/Scripts/WebForms/DetailsView.js" />
+                <asp:ScriptReference Name="TreeView.js" Assembly="System.Web" Path="~/Scripts/WebForms/TreeView.js" />
+                <asp:ScriptReference Name="WebParts.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebParts.js" />
+                <asp:ScriptReference Name="Focus.js" Assembly="System.Web" Path="~/Scripts/WebForms/Focus.js" />
+                <asp:ScriptReference Name="WebFormsBundle" />
+            </Scripts>
+        </asp:ScriptManager>
+
+        <!-- Fixed Left Sidebar -->
+        <aside class="app-sidebar">
+            <div class="sidebar-brand">
+                <i class="fa-solid fa-heart-pulse brand-icon"></i>
+                <span class="brand-name">HIS Clinic</span>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li id="menu-dashboard">
+                    <a href="Default">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Quản lý Bệnh Nhân</span>
+                    </a>
+                </li>
+                <li id="menu-exam">
+                    <a href="Examination">
+                        <i class="fa-solid fa-stethoscope"></i>
+                        <span>Khám Bệnh & Kê Đơn</span>
+                    </a>
+                </li>
+                <li id="menu-billing">
+                    <a href="Billing">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                        <span>Thanh Toán & Hóa Đơn</span>
+                    </a>
+                </li>
+                <li id="menu-medications">
+                    <a href="Medications">
+                        <i class="fa-solid fa-pills"></i>
+                        <span>Quản Lý Kho Thuốc</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <p>&copy; <%: DateTime.Now.Year %> - HIS System</p>
+                <p style="font-size: 10px; margin-top: 4px;">Phiên bản 1.0.0</p>
+            </div>
+        </aside>
+
+        <!-- Main Wrapper -->
+        <div class="app-wrapper">
+            <!-- Sticky Top Header -->
+            <header class="app-header">
+                <div class="header-title">
+                    <h1><%: Page.Title %></h1>
+                </div>
+                
+                <div class="header-meta">
+                    <div class="header-time">
+                        <i class="fa-regular fa-calendar-days"></i>
+                        <span id="live-clock"><%: DateTime.Now.ToString("dd/MM/yyyy HH:mm") %></span>
+                    </div>
+
+                    <div class="header-user">
+                        <div class="user-avatar">
+                            BS
+                        </div>
+                        <div class="user-info">
+                            <span class="user-name">BS. Phạm Minh Hoàng</span>
+                            <span class="user-role">Bác sĩ phụ trách phòng khám</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="app-content">
+                <asp:ContentPlaceHolder ID="MainContent" runat="server">
+                </asp:ContentPlaceHolder>
+            </main>
+        </div>
+    </form>
+
+    <asp:PlaceHolder runat="server">
+        <%: Scripts.Render("~/Scripts/bootstrap.js") %>
+    </asp:PlaceHolder>
+
+    <script type="text/javascript">
+        // Sidebar active class setting
+        $(document).ready(function () {
+            var path = window.location.pathname.toLowerCase();
+            $(".sidebar-menu li").removeClass("active");
+            if (path.indexOf("examination") >= 0) {
+                $("#menu-exam").addClass("active");
+            } else if (path.indexOf("billing") >= 0) {
+                $("#menu-billing").addClass("active");
+            } else if (path.indexOf("medications") >= 0) {
+                $("#menu-medications").addClass("active");
+            } else {
+                $("#menu-dashboard").addClass("active");
+            }
+
+            // Simple ticking clock
+            setInterval(function () {
+                var now = new Date();
+                var timeStr = ("0" + now.getDate()).slice(-2) + "/" + 
+                              ("0" + (now.getMonth() + 1)).slice(-2) + "/" + 
+                              now.getFullYear() + " " + 
+                              ("0" + now.getHours()).slice(-2) + ":" + 
+                              ("0" + now.getMinutes()).slice(-2) + ":" + 
+                              ("0" + now.getSeconds()).slice(-2);
+                $("#live-clock").text(timeStr);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
