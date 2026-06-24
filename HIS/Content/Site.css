@@ -1,4 +1,4 @@
-﻿/* Load Inter Font from Google Fonts */
+/* Load Inter Font from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
@@ -594,4 +594,138 @@ form {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
+}
+
+/* ==========================================================================
+   DevExpress ASPxPopupControl Responsive Center Alignment
+   ========================================================================== */
+/* Căn giữa tuyệt đối trên mọi màn hình */
+.dx-popup-center-premium {
+    position: fixed !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    max-width: 92% !important;
+    border-radius: 16px !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25) !important;
+}
+
+.popup-register-width {
+    width: 850px !important;
+}
+
+/* Đảm bảo phần background mờ của DevExpress cũng có backdrop-filter */
+.dxpc-modalBackground, .dxpLite .dxpc-modalBackground {
+    background-color: rgba(15, 23, 42, 0.5) !important; /* Slate 900 với alpha */
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+}
+
+/* Tinh chỉnh nội dung bên trong của DevExpress Popup */
+.dx-popup-center-premium .dxpc-content {
+    padding: 0 !important;
+    border: none !important;
+    background-color: var(--white) !important;
+}
+
+.dx-popup-center-premium .dxpc-header {
+    background-color: var(--white) !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 14px 20px !important;
+}
+
+.dx-popup-center-premium .dxpc-headerTitle {
+    font-weight: 700 !important;
+    color: var(--dark-sidebar) !important;
+    font-size: 15px !important;
+}
+
+/* ==========================================================================
+   Patient Phone Suggestions Dropdown (Premium)
+   ========================================================================== */
+.suggestions-box-premium {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.15);
+    z-index: 500;
+    max-height: 250px;
+    overflow-y: auto;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 6px;
+    animation: slide-up-suggestions 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slide-up-suggestions {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.suggestion-item-premium {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.suggestion-item-premium:hover {
+    background-color: var(--primary-bg);
+}
+
+.suggestion-item-premium i {
+    font-size: 16px;
+    color: var(--primary);
+    background-color: #e6fffa;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.suggestion-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-grow: 1;
+}
+
+.suggestion-item-name {
+    font-weight: 600;
+    color: var(--dark-sidebar);
+    font-size: 13.5px;
+}
+
+.suggestion-item-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.suggestion-item-premium:hover .suggestion-item-name {
+    color: var(--primary-dark);
+}
+
+/* Suggestion box empty state */
+.suggestion-empty-state {
+    padding: 12px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-style: italic;
 }

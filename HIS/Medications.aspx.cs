@@ -13,17 +13,15 @@ namespace HIS
         {
             if (!IsPostBack)
             {
-                BindMedications();
+                gvMedications.DataBind();
             }
         }
 
-        private void BindMedications(string search = "")
+        protected void gvMedications_DataBinding(object sender, EventArgs e)
         {
             try
             {
-                var list = DatabaseHelper.GetMedications(search);
-                gvMedications.DataSource = list;
-                gvMedications.DataBind();
+                gvMedications.DataSource = DatabaseHelper.GetMedications(txtSearch.Text.Trim());
             }
             catch (Exception ex)
             {
@@ -34,7 +32,7 @@ namespace HIS
 
         protected void btnSearch_Click(object sender, EventArgs e)
         {
-            BindMedications(txtSearch.Text);
+            gvMedications.DataBind();
         }
 
         protected void btnSave_Click(object sender, EventArgs e)
@@ -45,8 +43,8 @@ namespace HIS
                 {
                     string name = txtMedicationName.Text.Trim();
                     string unit = txtUnit.Text.Trim();
-                    decimal price = Convert.ToDecimal(txtPrice.Text);
-                    int stock = Convert.ToInt32(txtStockQuantity.Text);
+                    decimal price = Convert.ToDecimal(txtPrice.Value);
+                    int stock = Convert.ToInt32(txtStockQuantity.Value);
 
                     if (string.IsNullOrEmpty(hfMedicationId.Value))
                     {
@@ -63,7 +61,7 @@ namespace HIS
                     }
 
                     ClearForm();
-                    BindMedications();
+                    gvMedications.DataBind();
                 }
                 catch (Exception ex)
                 {
@@ -77,11 +75,11 @@ namespace HIS
             ClearForm();
         }
 
-        protected void gvMedications_RowCommand(object sender, GridViewCommandEventArgs e)
+        protected void gvMedications_RowCommand(object sender, DevExpress.Web.ASPxGridViewRowCommandEventArgs e)
         {
-            int medId = Convert.ToInt32(e.CommandArgument);
+            int medId = Convert.ToInt32(e.CommandArgs.CommandArgument);
 
-            if (e.CommandName == "EditMed")
+            if (e.CommandArgs.CommandName == "EditMed")
             {
                 try
                 {
@@ -92,8 +90,8 @@ namespace HIS
                         hfMedicationId.Value = med.MedicationId.ToString();
                         txtMedicationName.Text = med.MedicationName;
                         txtUnit.Text = med.Unit;
-                        txtPrice.Text = Convert.ToInt32(med.Price).ToString();
-                        txtStockQuantity.Text = med.StockQuantity.ToString();
+                        txtPrice.Value = med.Price;
+                        txtStockQuantity.Value = med.StockQuantity;
 
                         lblFormTitle.Text = "Cập Nhật Thông Tin Thuốc (Mã: " + medId + ")";
                         btnSave.Text = "Cập Nhật";
@@ -105,14 +103,14 @@ namespace HIS
                     ScriptManager.RegisterStartupScript(this, GetType(), "errorAlert", $"alert('Lỗi tải thông tin thuốc cần sửa: {ex.Message}');", true);
                 }
             }
-            else if (e.CommandName == "DeleteMed")
+            else if (e.CommandArgs.CommandName == "DeleteMed")
             {
                 try
                 {
                     DatabaseHelper.DeleteMedication(medId);
                     ScriptManager.RegisterStartupScript(this, GetType(), "successAlert", "alert('Xóa thuốc khỏi danh mục thành công!');", true);
                     ClearForm();
-                    BindMedications();
+                    gvMedications.DataBind();
                 }
                 catch (Exception ex)
                 {
@@ -126,8 +124,8 @@ namespace HIS
             hfMedicationId.Value = string.Empty;
             txtMedicationName.Text = string.Empty;
             txtUnit.Text = string.Empty;
-            txtPrice.Text = string.Empty;
-            txtStockQuantity.Text = string.Empty;
+            txtPrice.Value = null;
+            txtStockQuantity.Value = null;
             
             lblFormTitle.Text = "Thêm Thuốc Mới Vào Danh Mục";
             btnSave.Text = "Lưu Thông Tin";

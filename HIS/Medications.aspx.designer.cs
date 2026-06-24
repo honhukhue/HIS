@@ -15,13 +15,31 @@ namespace HIS
     {
 
         /// <summary>
+        /// upMedications control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel upMedications;
+
+        /// <summary>
         /// lblFormTitle control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblFormTitle;
+        protected global::DevExpress.Web.ASPxLabel lblFormTitle;
+
+        /// <summary>
+        /// flMedication control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxFormLayout flMedication;
 
         /// <summary>
         /// hfMedicationId control.
@@ -39,16 +57,7 @@ namespace HIS
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtMedicationName;
-
-        /// <summary>
-        /// rfvMedicationName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvMedicationName;
+        protected global::DevExpress.Web.ASPxTextBox txtMedicationName;
 
         /// <summary>
         /// txtUnit control.
@@ -57,16 +66,7 @@ namespace HIS
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtUnit;
-
-        /// <summary>
-        /// rfvUnit control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvUnit;
+        protected global::DevExpress.Web.ASPxTextBox txtUnit;
 
         /// <summary>
         /// txtPrice control.
@@ -75,25 +75,7 @@ namespace HIS
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtPrice;
-
-        /// <summary>
-        /// rfvPrice control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvPrice;
-
-        /// <summary>
-        /// rvPrice control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RangeValidator rvPrice;
+        protected global::DevExpress.Web.ASPxSpinEdit txtPrice;
 
         /// <summary>
         /// txtStockQuantity control.
@@ -102,25 +84,7 @@ namespace HIS
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtStockQuantity;
-
-        /// <summary>
-        /// rfvStockQuantity control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvStockQuantity;
-
-        /// <summary>
-        /// rvStockQuantity control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RangeValidator rvStockQuantity;
+        protected global::DevExpress.Web.ASPxSpinEdit txtStockQuantity;
 
         /// <summary>
         /// btnCancel control.
@@ -147,7 +111,7 @@ namespace HIS
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtSearch;
+        protected global::DevExpress.Web.ASPxTextBox txtSearch;
 
         /// <summary>
         /// btnSearch control.
@@ -165,6 +129,6 @@ namespace HIS
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvMedications;
+        protected global::DevExpress.Web.ASPxGridView gvMedications;
     }
 }

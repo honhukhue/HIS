@@ -1,4 +1,5 @@
-﻿<%@ Page Title="Phòng Khám & Kê Đơn" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Examination.aspx.cs" Inherits="HIS.Examination" %>
+<%@ Page Title="Phòng Khám & Kê Đơn" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Examination.aspx.cs" Inherits="HIS.Examination" %>
+<%@ Register Assembly="DevExpress.Web.v21.2, Version=21.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     
@@ -103,17 +104,17 @@
                             <ContentTemplate>
                                 
                                 <div class="form-grid" style="align-items: flex-end; gap: 12px; margin-bottom: 20px;">
-                                    <div class="form-group" style="margin-bottom: 0; flex: 2;">
-                                        <label class="form-label" for="txtDrugName">Tên thuốc</label>
-                                        <asp:TextBox ID="txtDrugName" runat="server" CssClass="form-control-premium" placeholder="Ví dụ: Paracetamol 500mg"></asp:TextBox>
+                                    <div class="form-group" style="margin-bottom: 0; flex: 3;">
+                                        <label class="form-label" for="cbMedication">Tên thuốc (Chọn từ danh mục)</label>
+                                        <dx:ASPxComboBox ID="cbMedication" runat="server" ClientInstanceName="cbMedication"
+                                            CssClass="form-control-premium" Width="100%" DropDownStyle="DropDownList"
+                                            IncrementalFilteringMode="Contains" ValueField="MedicationId" TextField="MedicationName"
+                                            NullText="Gõ tên thuốc để tìm kiếm..." ValueType="System.Int32" Theme="Moderno">
+                                        </dx:ASPxComboBox>
                                     </div>
-                                    <div class="form-group" style="margin-bottom: 0; flex: 0.5;">
-                                        <label class="form-label" for="txtQuantity">S.Lượng</label>
+                                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                                        <label class="form-label" for="txtQuantity">Số Lượng</label>
                                         <asp:TextBox ID="txtQuantity" runat="server" CssClass="form-control-premium" placeholder="10" TextMode="Number"></asp:TextBox>
-                                    </div>
-                                    <div class="form-group" style="margin-bottom: 0; flex: 0.5;">
-                                        <label class="form-label" for="txtUnit">Đơn vị</label>
-                                        <asp:TextBox ID="txtUnit" runat="server" CssClass="form-control-premium" placeholder="Viên"></asp:TextBox>
                                     </div>
                                 </div>
                                 <div class="form-group" style="display: flex; gap: 12px; align-items: flex-end;">
@@ -138,12 +139,15 @@
                                                 <HeaderStyle Width="50px" />
                                             </asp:TemplateField>
                                             <asp:BoundField DataField="DrugName" HeaderText="Tên Thuốc" />
-                                            <asp:BoundField DataField="Quantity" HeaderText="SL" HeaderStyleWidth="50px" />
-                                            <asp:BoundField DataField="Unit" HeaderText="Đơn vị" HeaderStyleWidth="60px" />
+                                            <asp:BoundField DataField="Quantity" HeaderText="SL" HeaderStyle-Width="50px" />
+                                            <asp:BoundField DataField="Unit" HeaderText="Đơn vị" HeaderStyle-Width="60px" />
                                             <asp:BoundField DataField="Dosage" HeaderText="Cách Dùng" />
-                                            <asp:CommandField ShowDeleteButton="True" DeleteText="Xóa" ButtonType="Link" ControlStyle-CssClass="text-danger" HeaderStyle-Width="60px">
-                                                <ControlStyle CssClass="text-danger" style="color:var(--danger); font-weight:600; text-decoration:none;" />
-                                            </asp:CommandField>
+                                            <asp:TemplateField HeaderText="Thao Tác" HeaderStyle-Width="60px">
+                                                <ItemTemplate>
+                                                    <asp:LinkButton ID="lnkDelete" runat="server" CommandName="Delete" 
+                                                        CssClass="text-danger" style="color:var(--danger); font-weight:600; text-decoration:none;">Xóa</asp:LinkButton>
+                                                </ItemTemplate>
+                                            </asp:TemplateField>
                                         </Columns>
                                         <EmptyDataTemplate>
                                             <div style="text-align: center; padding: 20px; color: var(--text-muted); font-style: italic;">
@@ -207,10 +211,10 @@
                                                             <strong><%# Eval("DrugName") %></strong> - <%# Eval("Quantity") %> <%# Eval("Unit") %> (<%# Eval("Dosage") %>)
                                                         </li>
                                                     </ItemTemplate>
-                                                    <EmptyDataTemplate>
-                                                        <li style="font-style:italic; color:var(--text-muted); font-size:11px;">Không có thuốc kê đơn</li>
-                                                    </EmptyDataTemplate>
                                                 </asp:Repeater>
+                                                <asp:PlaceHolder runat="server" Visible='<%# Eval("Prescription") == null || ((System.Collections.ICollection)Eval("Prescription")).Count == 0 %>'>
+                                                    <li style="font-style:italic; color:var(--text-muted); font-size:11px;">Không có thuốc kê đơn</li>
+                                                </asp:PlaceHolder>
                                             </ul>
                                         </div>
                                     </div>

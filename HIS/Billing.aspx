@@ -146,12 +146,19 @@
                         <asp:BoundField DataField="PatientId" HeaderText="Mã BN">
                             <HeaderStyle Width="80px" />
                         </asp:BoundField>
-                        <asp:BoundField DataField="FullName" HeaderText="Họ và Tên" />
+                        <asp:BoundField DataField="FullName" HeaderText="Họ và Tên">
+                            <HeaderStyle Width="300px" />
+                        </asp:BoundField>
                         <asp:BoundField DataField="DoctorName" HeaderText="Bác Sĩ Khám" />
-                        <asp:CommandField ShowSelectButton="True" SelectText="<i class='fa-solid fa-chevron-right'></i> Chọn" 
-                            ButtonType="Link" ControlStyle-CssClass="btn-premium btn-premium-primary btn-premium-sm" HeaderStyle-Width="90px">
-                            <ControlStyle CssClass="btn-premium btn-premium-primary btn-premium-sm" style="font-size:11px; padding: 4px 10px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;" />
-                        </asp:CommandField>
+                        <asp:TemplateField HeaderText="Thao Tác" HeaderStyle-Width="120px">
+                            <ItemTemplate>
+                                <asp:LinkButton ID="lnkSelect" runat="server" CommandName="Select" 
+                                    CssClass="btn-premium btn-premium-primary btn-premium-sm" 
+                                    style="font-size:11px; padding: 4px 10px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+                                    <i class="fa-solid fa-chevron-right"></i> Hóa đơn
+                                </asp:LinkButton>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                     </Columns>
                     <EmptyDataTemplate>
                         <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">

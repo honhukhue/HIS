@@ -8,6 +8,7 @@ using System.Web;
 
 namespace HIS
 {
+    [Serializable]
     public class Doctor
     {
         public int DoctorId { get; set; }
@@ -16,6 +17,7 @@ namespace HIS
         public string RoomNo { get; set; }
     }
 
+    [Serializable]
     public class PatientRegistration
     {
         public int VisitId { get; set; }
@@ -25,12 +27,15 @@ namespace HIS
         public string Gender { get; set; }
         public string InsuranceCard { get; set; }
         public string Address { get; set; }
+        public string Phone { get; set; } // Thêm số điện thoại
+        public long QueueNo { get; set; } // Số thứ tự trong ngày
         public string DoctorName { get; set; }
         public string RoomNo { get; set; }
         public string Status { get; set; }
         public DateTime VisitDate { get; set; }
     }
 
+    [Serializable]
     public class PrescriptionItem
     {
         public string DrugName { get; set; }
@@ -39,6 +44,7 @@ namespace HIS
         public string Dosage { get; set; }
     }
 
+    [Serializable]
     public class MedicalExamination
     {
         public string Id { get; set; }
@@ -53,6 +59,7 @@ namespace HIS
         public List<PrescriptionItem> Prescription { get; set; } = new List<PrescriptionItem>();
     }
 
+    [Serializable]
     public class Medication
     {
         public int MedicationId { get; set; }
@@ -62,6 +69,7 @@ namespace HIS
         public int StockQuantity { get; set; }
     }
 
+    [Serializable]
     public class BillingDrugItem
     {
         public int MedicationId { get; set; }
@@ -73,6 +81,7 @@ namespace HIS
         public decimal SubTotal => Quantity * Price;
     }
 
+    [Serializable]
     public class BillingDetail
     {
         public int VisitId { get; set; }
@@ -124,7 +133,7 @@ namespace HIS
 
         // --- Registration APIs calling Stored Procedures ---
 
-        public static string RegisterPatient(string fullName, DateTime dob, string gender, string insuranceCard, string address, int doctorId)
+        public static string RegisterPatient(string fullName, DateTime dob, string gender, string insuranceCard, string address, int doctorId, string phone)
         {
             using (SqlConnection conn = new SqlConnection(ConnString))
             {
@@ -138,6 +147,7 @@ namespace HIS
                     cmd.Parameters.AddWithValue("@InsuranceCard", string.IsNullOrWhiteSpace(insuranceCard) ? (object)DBNull.Value : insuranceCard.Trim());
                     cmd.Parameters.AddWithValue("@Address", string.IsNullOrWhiteSpace(address) ? (object)DBNull.Value : address.Trim());
                     cmd.Parameters.AddWithValue("@DoctorID", doctorId);
+                    cmd.Parameters.AddWithValue("@Phone", string.IsNullOrWhiteSpace(phone) ? (object)DBNull.Value : phone.Trim());
 
                     SqlParameter outParam = new SqlParameter("@NewPatientID", SqlDbType.VarChar, 20)
                     {
@@ -149,6 +159,39 @@ namespace HIS
                     return outParam.Value.ToString();
                 }
             }
+        }
+
+        public static List<PatientRegistration> GetPatientsByPhone(string phone)
+        {
+            var list = new List<PatientRegistration>();
+            if (string.IsNullOrWhiteSpace(phone)) return list;
+
+            using (SqlConnection conn = new SqlConnection(ConnString))
+            {
+                conn.Open();
+                string query = "SELECT PatientID, FullName, DOB, Gender, InsuranceCard, Address, Phone FROM Patients WHERE Phone LIKE @Phone";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Phone", "%" + phone.Trim() + "%");
+                    using (SqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
+                        {
+                            list.Add(new PatientRegistration
+                            {
+                                PatientId = rdr["PatientID"].ToString(),
+                                FullName = rdr["FullName"].ToString(),
+                                BirthDate = Convert.ToDateTime(rdr["DOB"]),
+                                Gender = rdr["Gender"].ToString(),
+                                InsuranceCard = rdr["InsuranceCard"] == DBNull.Value ? "" : rdr["InsuranceCard"].ToString(),
+                                Address = rdr["Address"] == DBNull.Value ? "" : rdr["Address"].ToString(),
+                                Phone = rdr["Phone"].ToString()
+                            });
+                        }
+                    }
+                }
+            }
+            return list;
         }
 
         public static List<PatientRegistration> GetTodayRegisteredPatients()
@@ -166,6 +209,7 @@ namespace HIS
                         {
                             list.Add(new PatientRegistration
                             {
+                                QueueNo = Convert.ToInt64(rdr["QueueNo"]),
                                 VisitId = Convert.ToInt32(rdr["VisitID"]),
                                 PatientId = rdr["PatientID"].ToString(),
                                 FullName = rdr["FullName"].ToString(),
@@ -173,6 +217,7 @@ namespace HIS
                                 Gender = rdr["Gender"].ToString(),
                                 InsuranceCard = rdr["InsuranceCard"] == DBNull.Value ? "" : rdr["InsuranceCard"].ToString(),
                                 Address = rdr["Address"] == DBNull.Value ? "" : rdr["Address"].ToString(),
+                                Phone = rdr["Phone"] == DBNull.Value ? "" : rdr["Phone"].ToString(),
                                 DoctorName = rdr["DoctorName"].ToString(),
                                 RoomNo = rdr["RoomNo"].ToString(),
                                 Status = rdr["Status"].ToString(),

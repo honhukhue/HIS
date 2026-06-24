@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -18,6 +18,7 @@ namespace HIS
                 if (int.TryParse(visitIdStr, out visitId))
                 {
                     LoadPatientDetails(visitId);
+                    LoadMedications();
                     
                     // Initialize clean prescription in ViewState
                     ViewState["CurrentPrescription"] = new List<PrescriptionItem>();
@@ -28,6 +29,20 @@ namespace HIS
                     pnlNoPatient.Visible = true;
                     pnlExamination.Visible = false;
                 }
+            }
+        }
+
+        private void LoadMedications()
+        {
+            try
+            {
+                var list = DatabaseHelper.GetMedications();
+                cbMedication.DataSource = list;
+                cbMedication.DataBind();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error loading medications: " + ex.Message);
             }
         }
 
@@ -88,18 +103,29 @@ namespace HIS
 
         protected void btnAddDrug_Click(object sender, EventArgs e)
         {
-            string drugName = txtDrugName.Text.Trim();
-            if (string.IsNullOrEmpty(drugName))
+            if (cbMedication.Value == null)
             {
-                ScriptManager.RegisterStartupScript(upPrescription, upPrescription.GetType(), "alert", "alert('Vui lòng nhập tên thuốc!');", true);
+                ScriptManager.RegisterStartupScript(upPrescription, upPrescription.GetType(), "alert", "alert('Vui lòng chọn thuốc từ danh mục!');", true);
                 return;
             }
+
+            int medId = Convert.ToInt32(cbMedication.Value);
+            var medications = DatabaseHelper.GetMedications();
+            var med = medications.FirstOrDefault(m => m.MedicationId == medId);
+            
+            if (med == null)
+            {
+                ScriptManager.RegisterStartupScript(upPrescription, upPrescription.GetType(), "alert", "alert('Không tìm thấy thuốc hợp lệ!');", true);
+                return;
+            }
+
+            string drugName = med.MedicationName;
+            string unit = med.Unit;
 
             int qty = 1;
             int.TryParse(txtQuantity.Text, out qty);
             if (qty <= 0) qty = 1;
 
-            string unit = string.IsNullOrWhiteSpace(txtUnit.Text) ? "Viên" : txtUnit.Text.Trim();
             string dosage = txtDosage.Text.Trim();
 
             var list = ViewState["CurrentPrescription"] as List<PrescriptionItem> ?? new List<PrescriptionItem>();
@@ -125,12 +151,12 @@ namespace HIS
             BindPrescription();
 
             // Clear inputs
-            txtDrugName.Text = string.Empty;
+            cbMedication.Value = null;
+            cbMedication.Text = string.Empty;
             txtQuantity.Text = string.Empty;
-            txtUnit.Text = string.Empty;
             txtDosage.Text = string.Empty;
 
-            txtDrugName.Focus();
+            cbMedication.Focus();
         }
 
         protected void gvPrescription_RowDeleting(object sender, GridViewDeleteEventArgs e)

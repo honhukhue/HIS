@@ -1,131 +1,195 @@
 <%@ Page Title="Quản Lý Kho Thuốc" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Medications.aspx.cs" Inherits="HIS.Medications" %>
 
-<asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <div class="split-layout">
-        
-        <!-- Left Column: Add / Edit Medication Form -->
-        <div class="card-premium">
-            <div class="card-premium-header">
-                <div class="card-premium-title">
-                    <i class="fa-solid fa-prescription-bottle-medical text-primary" style="color: var(--primary);"></i>
-                    <asp:Label ID="lblFormTitle" runat="server" Text="Thêm Thuốc Mới Vào Danh Mục"></asp:Label>
-                </div>
-            </div>
-            <div class="card-premium-body">
-                <asp:HiddenField ID="hfMedicationId" runat="server" Value="" />
-                
-                <div class="form-group">
-                    <label class="form-label" for="txtMedicationName">Tên Thuốc <span style="color:var(--danger)">*</span></label>
-                    <asp:TextBox ID="txtMedicationName" runat="server" CssClass="form-control-premium" placeholder="Ví dụ: Paracetamol 500mg"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="rfvMedicationName" runat="server" ControlToValidate="txtMedicationName" 
-                        ErrorMessage="Vui lòng nhập tên thuốc!" ForeColor="Red" Display="Dynamic" ValidationGroup="vgMedication" style="font-size: 12px; margin-top: 4px; display: block;"></asp:RequiredFieldValidator>
-                </div>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label" for="txtUnit">Đơn Vị Tính <span style="color:var(--danger)">*</span></label>
-                        <asp:TextBox ID="txtUnit" runat="server" CssClass="form-control-premium" placeholder="Ví dụ: Viên, Chai, Ống"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="rfvUnit" runat="server" ControlToValidate="txtUnit" 
-                            ErrorMessage="Vui lòng nhập đơn vị!" ForeColor="Red" Display="Dynamic" ValidationGroup="vgMedication" style="font-size: 12px; margin-top: 4px; display: block;"></asp:RequiredFieldValidator>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="txtPrice">Đơn Giá (VNĐ) <span style="color:var(--danger)">*</span></label>
-                        <asp:TextBox ID="txtPrice" runat="server" CssClass="form-control-premium" TextMode="Number" placeholder="Ví dụ: 1500"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="rfvPrice" runat="server" ControlToValidate="txtPrice" 
-                            ErrorMessage="Vui lòng nhập giá!" ForeColor="Red" Display="Dynamic" ValidationGroup="vgMedication" style="font-size: 12px; margin-top: 4px; display: block;"></asp:RequiredFieldValidator>
-                        <asp:RangeValidator ID="rvPrice" runat="server" ControlToValidate="txtPrice" MinimumValue="0" MaximumValue="99999999" Type="Double"
-                            ErrorMessage="Giá phải lớn hơn hoặc bằng 0!" ForeColor="Red" Display="Dynamic" ValidationGroup="vgMedication" style="font-size: 12px; margin-top: 4px; display: block;"></asp:RangeValidator>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="txtStockQuantity">Số Lượng Tồn Kho <span style="color:var(--danger)">*</span></label>
-                    <asp:TextBox ID="txtStockQuantity" runat="server" CssClass="form-control-premium" TextMode="Number" placeholder="Ví dụ: 1000"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="rfvStockQuantity" runat="server" ControlToValidate="txtStockQuantity" 
-                        ErrorMessage="Vui lòng nhập số lượng tồn kho!" ForeColor="Red" Display="Dynamic" ValidationGroup="vgMedication" style="font-size: 12px; margin-top: 4px; display: block;"></asp:RequiredFieldValidator>
-                    <asp:RangeValidator ID="rvStockQuantity" runat="server" ControlToValidate="txtStockQuantity" MinimumValue="0" MaximumValue="999999" Type="Integer"
-                        ErrorMessage="Số lượng tồn kho phải là số nguyên >= 0!" ForeColor="Red" Display="Dynamic" ValidationGroup="vgMedication" style="font-size: 12px; margin-top: 4px; display: block;"></asp:RangeValidator>
-                </div>
-
-                <div style="text-align: right; margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
-                    <asp:Button ID="btnCancel" runat="server" Text="Hủy Bỏ" CssClass="btn-premium btn-premium-secondary" OnClick="btnCancel_Click" Visible="false" />
-                    <asp:Button ID="btnSave" runat="server" Text="Lưu Thông Tin" CssClass="btn-premium btn-premium-primary" 
-                        ValidationGroup="vgMedication" OnClick="btnSave_Click" />
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column: Medication Catalog List -->
-        <div class="card-premium">
-            <div class="card-premium-header">
-                <div class="card-premium-title">
-                    <i class="fa-solid fa-table-list text-primary" style="color: var(--primary);"></i>
-                    <span>Danh Mục Thuốc Hiện Có</span>
-                </div>
-            </div>
-            <div class="card-premium-body">
-                <!-- Search Box -->
-                <div class="search-cluster">
-                    <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control-premium" placeholder="Tìm theo tên thuốc..."></asp:TextBox>
-                    <asp:Button ID="btnSearch" runat="server" Text="Tìm kiếm" CssClass="btn-premium btn-premium-secondary" OnClick="btnSearch_Click" />
-                </div>
-
-                <!-- GridView list -->
-                <asp:GridView ID="gvMedications" runat="server" AutoGenerateColumns="False" 
-                    GridLines="None" CssClass="table-premium" DataKeyNames="MedicationId"
-                    OnRowCommand="gvMedications_RowCommand">
-                    <Columns>
-                        <asp:BoundField DataField="MedicationId" HeaderText="Mã Thuốc">
-                            <HeaderStyle Width="90px" />
-                        </asp:BoundField>
-                        <asp:BoundField DataField="MedicationName" HeaderText="Tên Thuốc" />
-                        <asp:BoundField DataField="Unit" HeaderText="ĐVT">
-                            <HeaderStyle Width="70px" />
-                        </asp:BoundField>
-                        <asp:TemplateField HeaderText="Đơn Giá">
-                            <ItemTemplate>
-                                <%# Convert.ToDecimal(Eval("Price")).ToString("N0") %> đ
-                            </ItemTemplate>
-                            <HeaderStyle Width="110px" />
-                        </asp:TemplateField>
-                        <asp:TemplateField HeaderText="Tồn Kho">
-                            <ItemTemplate>
-                                <asp:PlaceHolder runat="server" Visible='<%# Convert.ToInt32(Eval("StockQuantity")) < 50 %>'>
-                                    <span style="color: var(--danger); font-weight: 700;">
-                                        <i class="fa-solid fa-triangle-exclamation"></i> <%# Eval("StockQuantity") %> (Sắp hết!)
-                                    </span>
-                                </asp:PlaceHolder>
-                                <asp:PlaceHolder runat="server" Visible='<%# Convert.ToInt32(Eval("StockQuantity")) >= 50 %>'>
-                                    <span><%# Eval("StockQuantity") %></span>
-                                </asp:PlaceHolder>
-                            </ItemTemplate>
-                            <HeaderStyle Width="115px" />
-                        </asp:TemplateField>
-                        <asp:TemplateField HeaderText="Thao Tác">
-                            <ItemTemplate>
-                                <asp:LinkButton ID="lnkEdit" runat="server" CommandName="EditMed" CommandArgument='<%# Eval("MedicationId") %>' 
-                                    CssClass="text-primary" style="margin-right: 12px; font-weight:600; text-decoration:none;">
-                                    <i class="fa-regular fa-pen-to-square"></i> Sửa
-                                </asp:LinkButton>
-                                <asp:LinkButton ID="lnkDelete" runat="server" CommandName="DeleteMed" CommandArgument='<%# Eval("MedicationId") %>' 
-                                    OnClientClick="return confirm('Bạn có chắc chắn muốn xóa thuốc này khỏi danh mục?');"
-                                    CssClass="text-danger" style="font-weight:600; text-decoration:none; color:var(--danger)">
-                                    <i class="fa-regular fa-trash-can"></i> Xóa
-                                </asp:LinkButton>
-                            </ItemTemplate>
-                            <HeaderStyle Width="140px" />
-                        </asp:TemplateField>
-                    </Columns>
-                    <EmptyDataTemplate>
-                        <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
-                            <i class="fa-solid fa-box-open" style="font-size: 36px; margin-bottom: 12px; display: block; color: var(--primary);"></i>
-                            Không có thuốc nào trong danh mục.
+<%@ Register Assembly="DevExpress.Web.v21.2, Version=21.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %><asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
+    <style type="text/css">
+        body, .app-content {
+            background-color: var(--white) !important;
+        }
+        .app-content {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+        .card-premium {
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+        }
+        .card-premium-header {
+            border-bottom: none !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        .card-premium-body {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        .med-layout-container {
+            display: flex;
+            gap: 24px;
+            align-items: stretch;
+            min-height: calc(100vh - 70px);
+        }
+        .med-main-content {
+            flex: 1;
+            min-width: 0;
+            padding-top: 32px;
+            padding-bottom: 32px;
+        }
+        .med-sidebar-content {
+            width: 380px;
+            flex-shrink: 0;
+            border-left: 1px solid var(--border);
+            padding-left: 24px;
+            padding-top: 32px;
+            padding-bottom: 32px;
+        }
+        .med-sticky-form {
+            position: sticky;
+            top: 102px;
+        }
+        @media (max-width: 1100px) {
+            .med-layout-container {
+                flex-direction: column-reverse;
+                gap: 30px;
+                min-height: auto;
+            }
+            .med-main-content {
+                padding-top: 0;
+            }
+            .med-sidebar-content {
+                width: 100%;
+                border-left: none !important;
+                padding-left: 0 !important;
+                padding-top: 32px;
+                padding-bottom: 0;
+            }
+            .med-sticky-form {
+                position: static;
+            }
+        }
+    </style>
+    <asp:UpdatePanel ID="upMedications" runat="server">
+        <ContentTemplate>
+            <div class="med-layout-container">
+                <!-- KHU VỰC DANH SÁCH THUỐC HIỆN CÓ (ĐẶT BÊN TRÁI, PHÌNH TO) -->
+                <div class="med-main-content">
+                    <div class="card-premium">
+                        <div class="card-premium-header">
+                            <div class="card-premium-title">
+                                <i class="fa-solid fa-table-list text-primary" style="color: var(--primary);"></i>
+                                <span>Danh Mục Thuốc Hiện Có</span>
+                            </div>
                         </div>
-                    </EmptyDataTemplate>
-                </asp:GridView>
-            </div>
-        </div>
+                        <div class="card-premium-body" style="padding: 20px;">
+                            <!-- Search Box -->
+                            <div class="search-cluster">
+                                <dx:ASPxTextBox ID="txtSearch" runat="server" Width="100%" Height="38px" NullText="Tìm theo tên thuốc..." Style="max-width: 360px !important;" />
+                                <asp:Button ID="btnSearch" runat="server" Text="Tìm kiếm" CssClass="btn-premium btn-premium-secondary" OnClick="btnSearch_Click" />
+                            </div>
 
-    </div>
+                            <!-- GridView list -->
+                            <dx:ASPxGridView ID="gvMedications" KeyFieldName="MedicationId" runat="server" AutoGenerateColumns="False" Width="100%" OnRowCommand="gvMedications_RowCommand" Settings-ShowBorder="False" OnDataBinding="gvMedications_DataBinding">
+                                <SettingsPopup>
+                                    <FilterControl AutoUpdatePosition="False"></FilterControl>
+                                </SettingsPopup>
+                                <Columns>
+                                    <dx:GridViewDataTextColumn Caption="Mã Thuốc" FieldName="MedicationId" ShowInCustomizationForm="True" VisibleIndex="0" Width="90px">
+                                    </dx:GridViewDataTextColumn>
+                                    <dx:GridViewDataTextColumn Caption="Tên Thuốc" FieldName="MedicationName" ShowInCustomizationForm="True" VisibleIndex="1">
+                                    </dx:GridViewDataTextColumn>
+                                    <dx:GridViewDataTextColumn Caption="ĐVT" FieldName="Unit" ShowInCustomizationForm="True" VisibleIndex="2" Width="70px">
+                                    </dx:GridViewDataTextColumn>
+                                    <dx:GridViewDataTextColumn Caption="Đơn Giá" FieldName="Price" ShowInCustomizationForm="True" VisibleIndex="3" Width="110px">
+                                        <PropertiesTextEdit DisplayFormatString="{0:N0} đ">
+                                        </PropertiesTextEdit>
+                                    </dx:GridViewDataTextColumn>
+                                    <dx:GridViewDataTextColumn Caption="Tồn Kho" FieldName="StockQuantity" ShowInCustomizationForm="True" VisibleIndex="4" Width="90px">
+                                    </dx:GridViewDataTextColumn>
+                                    <dx:GridViewDataColumn Caption="Thao Tác" VisibleIndex="5" Width="120px">
+                                        <DataItemTemplate>
+                                            <asp:LinkButton ID="btnEdit" runat="server" CommandName="EditMed" CommandArgument='<%# Eval("MedicationId") %>' Text="Sửa" Style="margin-right: 10px; color: var(--primary); font-weight: 600; text-decoration: none;" />
+                                            <asp:LinkButton ID="btnDelete" runat="server" CommandName="DeleteMed" CommandArgument='<%# Eval("MedicationId") %>' Text="Xóa" OnClientClick="return confirm('Ngài có chắc chắn muốn xóa thuốc này không?');" Style="color: var(--danger); font-weight: 600; text-decoration: none;" />
+                                        </DataItemTemplate>
+                                    </dx:GridViewDataColumn>
+                                </Columns>
+                            </dx:ASPxGridView>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KHU VỰC FORM THÊM / SỬA THUỐC (ĐẶT BÊN PHẢI NHƯ SIDEBAR) -->
+                <div class="med-sidebar-content">
+                    <div class="card-premium med-sticky-form">
+                        <div class="card-premium-header">
+                            <div class="card-premium-title">
+                                <i class="fa-solid fa-prescription-bottle-medical text-primary" style="color: var(--primary);"></i>
+                                <dx:ASPxLabel ID="lblFormTitle" runat="server" Text="Thêm Thuốc Mới Vào Danh Mục" Font-Bold="True" ForeColor="#0f172a" />
+                            </div>
+                        </div>
+                        <div class="card-premium-body" style="padding: 20px;">
+                            <asp:HiddenField ID="hfMedicationId" runat="server" Value="" />
+                            
+                            <dx:ASPxFormLayout ID="flMedication" runat="server" Width="100%" UseDefaultPaddings="false">
+                                <SettingsItemCaptions Location="Top" />
+                                <Items>
+                                    <dx:LayoutItem Caption="Tên Thuốc" RequiredMarkDisplayMode="Required">
+                                        <LayoutItemNestedControlCollection>
+                                            <dx:LayoutItemNestedControlContainer runat="server">
+                                                <dx:ASPxTextBox ID="txtMedicationName" runat="server" Width="100%" Height="38px" NullText="Paracetamol 500mg">
+                                                    <ValidationSettings ValidationGroup="vgMedication" Display="Dynamic" ErrorDisplayMode="Text" ErrorTextPosition="Bottom">
+                                                        <RequiredField IsRequired="True" ErrorText="Vui lòng nhập tên thuốc!" />
+                                                    </ValidationSettings>
+                                                </dx:ASPxTextBox>
+                                            </dx:LayoutItemNestedControlContainer>
+                                        </LayoutItemNestedControlCollection>
+                                    </dx:LayoutItem>
+                                    
+                                    <dx:LayoutItem Caption="Đơn Vị Tính" RequiredMarkDisplayMode="Required">
+                                        <LayoutItemNestedControlCollection>
+                                            <dx:LayoutItemNestedControlContainer runat="server">
+                                                <dx:ASPxTextBox ID="txtUnit" runat="server" Width="100%" Height="38px" NullText="Viên, Chai, Ống">
+                                                    <ValidationSettings ValidationGroup="vgMedication" Display="Dynamic" ErrorDisplayMode="Text" ErrorTextPosition="Bottom">
+                                                        <RequiredField IsRequired="True" ErrorText="Vui lòng nhập đơn vị!" />
+                                                    </ValidationSettings>
+                                                </dx:ASPxTextBox>
+                                            </dx:LayoutItemNestedControlContainer>
+                                        </LayoutItemNestedControlCollection>
+                                    </dx:LayoutItem>
+                                    
+                                    <dx:LayoutItem Caption="Đơn Giá (VNĐ)" RequiredMarkDisplayMode="Required">
+                                        <LayoutItemNestedControlCollection>
+                                            <dx:LayoutItemNestedControlContainer runat="server">
+                                                <dx:ASPxSpinEdit ID="txtPrice" runat="server" Width="100%" Height="38px" NullText="1500" MinValue="0" MaxValue="99999999" NumberType="Integer" AllowMouseWheel="false">
+                                                    <ValidationSettings ValidationGroup="vgMedication" Display="Dynamic" ErrorDisplayMode="Text" ErrorTextPosition="Bottom">
+                                                        <RequiredField IsRequired="True" ErrorText="Vui lòng nhập giá!" />
+                                                    </ValidationSettings>
+                                                </dx:ASPxSpinEdit>
+                                            </dx:LayoutItemNestedControlContainer>
+                                        </LayoutItemNestedControlCollection>
+                                    </dx:LayoutItem>
+
+                                    <dx:LayoutItem Caption="Số Lượng Tồn Kho" RequiredMarkDisplayMode="Required">
+                                        <LayoutItemNestedControlCollection>
+                                            <dx:LayoutItemNestedControlContainer runat="server">
+                                                <dx:ASPxSpinEdit ID="txtStockQuantity" runat="server" Width="100%" Height="38px" NullText="1000" MinValue="0" MaxValue="999999" NumberType="Integer" AllowMouseWheel="false">
+                                                    <ValidationSettings ValidationGroup="vgMedication" Display="Dynamic" ErrorDisplayMode="Text" ErrorTextPosition="Bottom">
+                                                        <RequiredField IsRequired="True" ErrorText="Vui lòng nhập số lượng tồn kho!" />
+                                                    </ValidationSettings>
+                                                </dx:ASPxSpinEdit>
+                                            </dx:LayoutItemNestedControlContainer>
+                                        </LayoutItemNestedControlCollection>
+                                    </dx:LayoutItem>
+                                </Items>
+                            </dx:ASPxFormLayout>
+
+                            <div style="text-align: right; margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
+                                <asp:Button ID="btnCancel" runat="server" Text="Hủy Bỏ" CssClass="btn-premium btn-premium-secondary" OnClick="btnCancel_Click" Visible="false" />
+                                <asp:Button ID="btnSave" runat="server" Text="Lưu Thông Tin" CssClass="btn-premium btn-premium-primary" ValidationGroup="vgMedication" OnClick="btnSave_Click" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ContentTemplate>
+    </asp:UpdatePanel>
 </asp:Content>

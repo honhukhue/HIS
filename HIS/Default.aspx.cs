@@ -16,7 +16,22 @@ namespace HIS
                 LoadDoctors();
                 LoadStats();
                 BindPatients();
+
+                // Kiểm tra hiển thị thông báo thành công từ PRG redirect
+                string successId = Request.QueryString["successId"];
+                if (!string.IsNullOrEmpty(successId))
+                {
+                    litSuccessPatientId.Text = successId;
+                    popupSuccess.ShowOnPageLoad = true;
+                    ScriptManager.RegisterStartupScript(this, GetType(), "clearUrlQuery", "if(window.history.replaceState) { window.history.replaceState({}, document.title, window.location.pathname); }", true);
+                }
             }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static List<PatientRegistration> GetPatientByPhone(string phone)
+        {
+            return DatabaseHelper.GetPatientsByPhone(phone);
         }
 
         private void LoadDoctors()
@@ -84,6 +99,7 @@ namespace HIS
             {
                 try
                 {
+                    string phone = txtPhone.Text.Trim();
                     string fullName = txtFullName.Text.Trim();
                     DateTime dob = DateTime.Parse(txtBirthDate.Text);
                     string gender = rblGender.SelectedValue;
@@ -91,24 +107,10 @@ namespace HIS
                     string address = txtAddress.Text.Trim();
                     int doctorId = Convert.ToInt32(ddlDoctors.SelectedValue);
 
-                    string patientId = DatabaseHelper.RegisterPatient(fullName, dob, gender, insuranceCard, address, doctorId);
+                    string patientId = DatabaseHelper.RegisterPatient(fullName, dob, gender, insuranceCard, address, doctorId, phone);
 
-                    // Clear form fields
-                    txtFullName.Text = string.Empty;
-                    txtBirthDate.Text = string.Empty;
-                    rblGender.SelectedIndex = 0;
-                    txtInsuranceCard.Text = string.Empty;
-                    txtAddress.Text = string.Empty;
-                    if (ddlDoctors.Items.Count > 0)
-                    {
-                        ddlDoctors.SelectedIndex = 0;
-                    }
-
-                    // Reload stats and grid
-                    LoadStats();
-                    BindPatients();
-
-                    ScriptManager.RegisterStartupScript(this, GetType(), "successAlert", $"alert('Tiếp nhận bệnh nhân thành công! Mã BN: {patientId}');", true);
+                    // Redirect sang GET để tránh lỗi F5 gửi lại Form (Post-Redirect-Get Pattern)
+                    Response.Redirect("~/Default?successId=" + patientId);
                 }
                 catch (Exception ex)
                 {
